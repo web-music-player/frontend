@@ -1,7 +1,3 @@
-<script setup lang="ts">
-
-</script>
-
 <template>
   <div class="modulo">
     <h1 class="green">Registrazione</h1>
