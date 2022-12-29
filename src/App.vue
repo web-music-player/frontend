@@ -1,35 +1,48 @@
-<script setup lang="ts">
+<script lang="ts">
 import { RouterLink, RouterView } from "vue-router";
-import HelloWorld from "./components/HelloWorld.vue";
+import Registrazione from "./components/Registrazione.vue";
+import Accesso from "./components/Accesso.vue";
+
+export default {
+  components: {
+    Accesso,
+    Registrazione,
+  },
+  data() {
+    return {
+      moduloCorrente: 'Accesso',
+      moduli: ['Accesso', 'Registrazione']
+    }
+  }
+}
 </script>
 
 <template>
   <header>
-    <img
-      alt="Vue logo"
-      class="logo"
-      src="@/assets/logo.svg"
-      width="125"
-      height="125"
-    />
 
     <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
+      Ingresso nella piattaforma:<button
+      v-for="modulo in moduli"
+      :key="modulo"
+      :class="['tab-button', { active: moduloCorrente === modulo }]"
+      @click="moduloCorrente = modulo"
+      >
+      {{ modulo }}
+    </button>
+    <br/><br/>
+    <component :is="moduloCorrente" class="moduli"></component>
     </div>
+
   </header>
 
   <RouterView />
+
 </template>
 
 <style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
+
+.tab-button {
+  margin: 0 1rem;
 }
 
 .logo {
