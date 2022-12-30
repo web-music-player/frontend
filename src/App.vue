@@ -1,5 +1,6 @@
 <script lang="ts">
   import { RouterView } from "vue-router";
+  import { loggedUser } from './states/loggedUser';
 
   import Registrazione from "./components/Registrazione.vue";
   import Accesso from "./components/Accesso.vue";
@@ -12,7 +13,16 @@
     data() {
       return {
         moduloCorrente: 'Accesso',
-        moduli: ['Accesso', 'Registrazione']
+        moduli: ['Accesso', 'Registrazione'],
+        user: loggedUser
+      }
+    },
+    methods: {
+      enter() {
+        this.$router.push('/home');
+      },
+      exit() {
+        this.$router.push('/')
       }
     }
   }
@@ -20,18 +30,19 @@
 
 <template>
   <header>
-
     <div class="wrapper">
-      Ingresso nella piattaforma:<button
-      v-for="modulo in moduli"
-      :key="modulo"
-      :class="['tab-button', { active: moduloCorrente === modulo }]"
-      @click="moduloCorrente = modulo"
-      >
-      {{ modulo }}
-    </button>
+      <span v-if="!user.token">Ingresso nella piattaforma:
+        <button
+        v-for="modulo in moduli"
+        :key="modulo"
+        :class="['tab-button', { active: moduloCorrente === modulo }]"
+        @click="moduloCorrente = modulo"
+        >
+        {{ modulo }}
+      </button>
+    </span>
     <br/><br/>
-    <component :is="moduloCorrente" class="moduli"></component>
+    <component :is="moduloCorrente" class="moduli" @login="enter()" @logout="exit()"></component>
     </div>
 
   </header>

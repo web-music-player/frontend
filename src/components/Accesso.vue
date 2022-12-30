@@ -1,15 +1,60 @@
-<template>
-  <div class="modulo">
-    <h1 class="green">Accesso</h1>
-    
-    <form action="">
-        <label>Indirizzo email: <input type="text"></label>
-        
-        <label>Password: <input type="text"></label>
-        
-        <label><input type="submit"></label>
-    </form>
+<script setup lang='ts'>
+  import { ref } from 'vue';
+  import { loggedUser, setLoggedUser, clearLoggedUser } from '../states/loggedUser';
 
+  const HOST = import.meta.env.API_HOST || `http://localhost:8080`;
+
+  const email = ref('test@gmail.com');
+  const password = ref('1234#');
+  
+  const emit = defineEmits(['login', 'logout']);
+
+  async function login() {
+
+    try {
+      const response = await fetch(HOST + '/api/auth/accesso', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: email.value,
+          password: password.value
+        }),
+      })
+
+      if (response.status !== 200) {
+        const message = JSON.parse(await response.text());
+        alert(message.message)
+        return;
+      }
+      
+      const data = await response.json();
+      setLoggedUser({ id: data.id, token: data.token })
+
+      emit('login', loggedUser);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  function logout() {
+    clearLoggedUser();
+    emit('logout');
+  }
+</script>
+
+<template>
+  <div class='modulo'>
+    <div v-if="!loggedUser.token">
+      <h1 class='green'>Accesso</h1>
+      <form>
+        <label>Indirizzo email:<input name="email" v-model="email" /></label>
+        <label>Password:<input name="password" v-model="password" /></label>
+        <button type="button" @click="login">LogIn</button>
+      </form>
+    </div>
+    <div v-else>
+      <h2>Bentornato {{ loggedUser.id }}</h2>
+      <button type="button" @click="logout">LogOut</button>
+    </div>
   </div>
 </template>
 

@@ -1,23 +1,97 @@
+<script setup lang='ts'>
+  import { ref } from 'vue';
+  import { loggedUser, setLoggedUser, clearLoggedUser } from '../states/loggedUser';
+
+  const HOST = import.meta.env.API_HOST || `http://localhost:8080`;
+
+  const email = ref('test@gmail.com');
+  const password = ref('1234#');
+  const conferma = ref('1234#');
+  const tipoAccount = ref('standard');
+  
+  const emit = defineEmits(['login', 'logout']);
+
+  async function registrazione() {
+
+    if (!validateEmail(email.value)) {
+      alert('Il campo email deve contenere una stringa non vuota in formato email');
+      return;
+    }
+    if (!validatePassword(password.value)) {
+      alert('Il campo password deve contenere una stringa di almeno 8 caratteri, almeno una maiuscola ed 1 carattere speciale (%&#!@*^)');
+      return;
+    }
+    if (password.value !== conferma.value) {
+      alert('I valori del campo password e conferma password devono essere uguali');
+      return;
+    }
+    
+    try {
+      const response = await fetch(HOST + '/api/auth/registrazione', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: email.value,
+        password: password.value,
+        tipoAccount: tipoAccount.value
+      }),
+    });
+
+      if (response.status !== 201) {
+        const message = JSON.parse(await response.text());
+        alert(message.message)
+        return;
+      }
+      
+      const data = await response.json();
+      setLoggedUser({ id: data.id, token: data.token })
+
+      emit('login', loggedUser);
+
+      return;
+        
+    } catch (error) {
+      console.log(error);
+    }
+
+  }
+  function logout() {
+    clearLoggedUser();
+    emit('logout');
+  }
+  function validateEmail(text: string) {
+      var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      return re.test(text);
+  }
+  // Password valida: lunghezza >= 8 caratteri, una maiuscola, una minuscola, un carattere speciale (%&#!@*^)
+  function validatePassword(text: string) {
+      var re = /^((?=.*[a-z])(?=.*[A-Z])(?=.*[%&#!@\*\^]).{8,})$/;
+      return re.test(text);
+}
+</script>
+
 <template>
   <div class="modulo">
-    <h1 class="green">Registrazione</h1>
-    
-    <form action="">
-        <label>Indirizzo email: <input type="text"></label>
+    <div v-if="!loggedUser.token">
+      <h1 class="green">Registrazione</h1>
+      <form>
+          <label>Indirizzo email: <input name="email" v-model="email"></label>
+          <label>Password: <input name="password" v-model="password"></label>
+          <label>Conferma password: <input name="conferma" v-model="conferma"></label>
+          <label>Tipo account:
+              <select name="tipoAccount" v-model="tipoAccount">
+                <option value="standard">Standard</option>
+                <option value="creator">Creator</option>
+              </select>
+          </label>
 
-        <label>Password: <input type="text"></label>
-
-        <label>Conferma password: <input type="text"></label>
-
-        <label>Tipo account:
-            <select>
-            <option value="standard">Standard</option>
-            <option value="creator">Creator</option>
-            </select>
-        </label>
-
-        <label><input type="submit"></label>
-    </form>
+          <button type="button" @click="registrazione">Registrati</button>
+      </form>
+    </div>
+    <div v-else>
+      <h2>Bentornato {{ loggedUser.id }}</h2>
+      <button type="button" @click="logout">LogOut</button>
+    </div>
 
   </div>
 </template>
