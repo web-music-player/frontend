@@ -2,19 +2,21 @@
   import { ref, onMounted, watch } from 'vue';
   import { loggedUser } from '../states/loggedUser';
   import { modifiche, setModifiche } from '../states/modifiche';
+  
+  import * as Vue from 'vue';
+  const { inject } = Vue;
+  const $HOST = inject('HOST');
 
-  const HOST = import.meta.env.API_HOST || `http://localhost:8080`;
+  const HOST = $HOST || `http://localhost:8080`;
 
   const preferiti:any = ref([])
   const temp:any = ref([])
 
   watch(loggedUser, async (_loggedUser, _prevLoggedUser) => {
-    console.log(2)
     await caricaPreferiti();
   });
 
   watch(modifiche, async (nuove, vecchie) => {
-    console.log(3)
     await caricaPreferiti()
   }, { deep: true, immediate: true});
 

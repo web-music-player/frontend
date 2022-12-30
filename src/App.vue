@@ -31,6 +31,7 @@
 <template>
   <header>
     <div class="wrapper">
+      <!-- https://stackoverflow.com/questions/39391218/vuejs-swap-component-on-click -->
       <span v-if="!user.token">Ingresso nella piattaforma:
         <button
         v-for="modulo in moduli"

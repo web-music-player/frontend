@@ -1,8 +1,12 @@
 <script setup lang='ts'>
   import { ref } from 'vue';
   import { loggedUser, setLoggedUser, clearLoggedUser } from '../states/loggedUser';
+  
+  import * as Vue from 'vue';
+  const { inject } = Vue;
+  const $HOST = inject('HOST');
 
-  const HOST = import.meta.env.API_HOST || `http://localhost:8080`;
+  const HOST = $HOST || `http://localhost:8080`;
 
   const email = ref('test@gmail.com');
   const password = ref('1234#');
@@ -10,7 +14,7 @@
   const emit = defineEmits(['login', 'logout']);
 
   async function login() {
-
+    // https://stackoverflow.com/questions/70772238/javascript-fetch-api-use-custom-error-message
     try {
       const response = await fetch(HOST + '/api/auth/accesso', {
         method: 'POST',
@@ -59,7 +63,9 @@
 </template>
 
 <style scoped>
-
+/*
+  https://stackoverflow.com/questions/17275707/how-do-i-evenly-add-space-between-a-label-and-the-input-field-regardless-of-leng
+ */
 form {
     text-align: center;
 }

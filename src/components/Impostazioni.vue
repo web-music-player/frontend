@@ -1,8 +1,12 @@
 <script setup lang='ts'>
   import { ref } from 'vue';
   import { loggedUser, clearLoggedUser } from '../states/loggedUser';
+  
+  import * as Vue from 'vue';
+  const { inject } = Vue;
+  const $HOST = inject('HOST');
 
-  const HOST = import.meta.env.API_HOST || `http://localhost:8080`;
+  const HOST = $HOST || `http://localhost:8080`;
 
   async function conferma() {
     let risposta = confirm("Sei sicuro di voler eliminare il tuo account dalla piattaforma?");

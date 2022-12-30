@@ -2,8 +2,12 @@
   import { ref } from 'vue';
   import { loggedUser } from '../states/loggedUser';
   import { setModifiche } from '../states/modifiche';
+  
+  import * as Vue from 'vue';
+  const { inject } = Vue;
+  const $HOST = inject('HOST');
 
-  const HOST = import.meta.env.API_HOST || `http://localhost:8080`;
+  const HOST = $HOST || `http://localhost:8080`;
 
   const risultati:any = ref([])
   const testo = ref('Titolo');
