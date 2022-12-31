@@ -1,11 +1,11 @@
 import { reactive } from 'vue';
 
 const modifiche = reactive({
-    nuovoPreferito: undefined
+    idBrano: undefined
 });
 
-function setModifiche (nuovoPreferito:any) {
-    modifiche.nuovoPreferito = nuovoPreferito;
+function setModifiche (idBrano:any) {
+    modifiche.idBrano = idBrano;
 }
 
 

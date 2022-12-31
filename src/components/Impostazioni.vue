@@ -1,6 +1,6 @@
 <script setup lang='ts'>
-  import { ref } from 'vue';
-  import { loggedUser, clearLoggedUser } from '../states/loggedUser';
+  import { setModifiche } from '@/states/modifiche';
+import { loggedUser, clearLoggedUser } from '../states/loggedUser';
   
   import * as Vue from 'vue';
   const { inject } = Vue;
@@ -29,6 +29,7 @@
         
         alert("Account eliminato")
         clearLoggedUser();
+        setModifiche(loggedUser.id);
       } catch(err) {
           console.log(err);
       }

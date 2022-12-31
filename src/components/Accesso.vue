@@ -32,7 +32,7 @@
       }
       
       const data = await response.json();
-      setLoggedUser({ id: data.id, token: data.token })
+      setLoggedUser({ id: data.id, email: data.email, tipoAccount: data.tipoAccount, token: data.token })
 
       emit('login', loggedUser);
     } catch (error) {
@@ -56,7 +56,7 @@
       </form>
     </div>
     <div v-else>
-      <h2>Bentornato {{ loggedUser.id }}</h2>
+      <h2>Bentornato {{ loggedUser.email }}</h2>
       <button type="button" @click="logout">LogOut</button>
     </div>
   </div>

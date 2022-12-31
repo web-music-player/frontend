@@ -1,7 +1,7 @@
 <script setup lang='ts'>
-  import { ref, onMounted, watch } from 'vue';
+  import { ref, watch } from 'vue';
   import { loggedUser } from '../states/loggedUser';
-  import { modifiche, setModifiche } from '../states/modifiche';
+  import { modifiche } from '../states/modifiche';
   
   import * as Vue from 'vue';
   const { inject } = Vue;
@@ -17,7 +17,7 @@
   });
 
   watch(modifiche, async (nuove, vecchie) => {
-    await caricaPreferiti()
+    await caricaPreferiti();
   }, { deep: true, immediate: true});
 
   async function caricaPreferiti() {

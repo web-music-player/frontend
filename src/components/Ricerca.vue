@@ -1,6 +1,7 @@
 <script setup lang='ts'>
-  import { ref } from 'vue';
+  import { ref, watch } from 'vue';
   import { loggedUser } from '../states/loggedUser';
+  import { modifiche } from '../states/modifiche';
   import { setModifiche } from '../states/modifiche';
   
   import * as Vue from 'vue';
@@ -13,6 +14,10 @@
   const testo = ref('Titolo');
 
   let effettuata = false;
+
+  watch(modifiche, async (nuove, vecchie) => {
+    await ricerca();
+  }, { deep: true, immediate: true});
 
   async function ricerca() {
     try {
@@ -54,6 +59,76 @@
     }
   }
 
+  async function modificaBrano(brano:any) {
+    let validi = true;
+    let titolo = ""
+    let tags
+
+    do {
+      validi = true;
+
+      titolo = prompt('Imposta titolo (campo obbligatorio)', brano.nome) || "";
+      tags = prompt('Imposta tags', brano.tags) || "";
+
+      if (titolo == "") validi = false;
+
+    } while (!validi);
+
+    try {
+      const response = await fetch(HOST + '/api/brano', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', 'x-access-token': loggedUser.token || "" },
+        body: JSON.stringify({
+          idBrano: brano._id,
+          nomeBrano: titolo,
+          tags: tags.split(',')
+        }),
+      });
+
+      if (response.status !== 200) {
+        const message = JSON.parse(await response.text());
+        alert(message.message)
+        return;
+      }
+      alert('Brano modificato!');
+      setModifiche(brano._id);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  async function eliminaBrano(brano:any) {
+    // Conferma aggiuntiva
+    if (brano.artista !== loggedUser.id) {
+      alert('Non puoi eliminare il brano selezionato')
+      return;
+    }
+
+    let conferma = confirm(`Sei sicuro di voler eliminare il brano ${brano.nome}?`);
+
+    if (!conferma) {
+      return;
+    }
+
+    try {
+      const response = await fetch(HOST + '/api/brano/', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json', 'x-access-token': loggedUser.token || "" },
+        body: JSON.stringify({
+          idBrano: brano._id
+        }),
+      });
+
+      if (response.status !== 204) {
+        const message = JSON.parse(await response.text());
+        alert(message.message)
+        return;
+      }
+      alert('Brano eliminato!');
+      setModifiche(brano._id);
+    } catch (error) {
+      console.log(error);
+    }
+  }
 </script>
 
 <template>
@@ -63,9 +138,11 @@
   <h3 v-if="effettuata">Risultati:</h3>
   <ul>
     <li v-for="risultato in risultati" :key=risultato._id>
-      {{ risultato.nome }}
-      -
+      {{ risultato.nome }} (durata: {{ risultato.durata }}s), tags: {{ risultato.tags.join(', ') }}
+      <br/>
       <button v-on:click="aggiungiAiPreferiti(risultato._id)">Aggiungi a preferiti</button>
+      <button v-if="loggedUser.tipoAccount==='creator' && loggedUser.id===risultato.artista" v-on:click="modificaBrano(risultato)">Modifica</button>
+      <button v-if="loggedUser.tipoAccount==='creator' && loggedUser.id===risultato.artista" v-on:click="eliminaBrano(risultato)">Elimina</button>
   </li>
   </ul>
 </template>
