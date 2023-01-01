@@ -51,13 +51,13 @@
       <h1 class='green'>Accesso</h1>
       <form>
         <label>Indirizzo email:<input name="email" v-model="email" /></label>
-        <label>Password:<input name="password" v-model="password" /></label>
+        <label>Password:<input type="password" name="password" v-model="password" /></label>
         <button type="button" @click="login">LogIn</button>
       </form>
     </div>
     <div v-else>
       <h2>Bentornato {{ loggedUser.email }}</h2>
-      <button type="button" @click="logout">LogOut</button>
+      <button type="button" @click="logout">Logout</button>
     </div>
   </div>
 </template>

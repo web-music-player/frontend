@@ -22,7 +22,7 @@
       return;
     }
     if (!validatePassword(password.value)) {
-      alert('Il campo password deve contenere una stringa di almeno 8 caratteri, almeno una maiuscola ed 1 carattere speciale (%&#!@*^)');
+      alert('Il campo password deve avere una lunghezza minima di 8 caratteri, una lettera maiuscola, una lettera minuscola, un carattere speciale (%&#!@*^)');
       return;
     }
     if (password.value !== conferma.value) {
@@ -94,7 +94,7 @@
     </div>
     <div v-else>
       <h2>Bentornato {{ loggedUser.email }}</h2>
-      <button type="button" @click="logout">LogOut</button>
+      <button type="button" @click="logout">Logout</button>
     </div>
 
   </div>
